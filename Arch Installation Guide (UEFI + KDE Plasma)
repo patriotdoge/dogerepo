@@ -1,0 +1,35 @@
+## Arch Linux Installation Guide (UEFI + KDE Plasma)
+
+## Initial Setup
+
+Make a bootable live USB with the latest Arch Linux .iso file.
+
+## 1st Step (Disk Partitioning - GPT)
+
+gdisk /dev/nvme0n1
+
+/boot/efi : EFI partition (1024M) --> (/dev/nvme0n1p1) (GUID: EF00)
+/boot : Boot partition (2048M) --> (/dev/nvme0n1p2) (GUID: 8300)
+[SWAP] : Swap partition (25600M*) --> (/dev/nvme0n1p3) (GUID: 8300)
+/ : Root mount point (32768M) --> (/dev/nvme0n1p4) (GUID: 8300)
+/home : Home mount point (All remaining space left) --> (/dev/nvme0n1p5) (GUID: 8300)
+
+* With Hibernation, without use only 5120M.
+
+
+## 2nd Step (Format and Mount Partitions)
+
+mkfs.fat -F 32 /dev/nvme0n1p1
+mkfs.ext4 /dev/nvme0n1p2
+mkfs.ext4 /dev/nvme0n1p4
+mkfs.ext4 /dev/nvme0n1p5
+mkswap /dev/nvme0n1p3
+
+swapon /dev/nvme0n1p3
+mount /dev/nvme0n1p4 /mnt
+mkdir /mnt/boot
+mkdir /mnt/boot/efi
+mkdir /mnt/home
+mount /dev/nvme0n1p2 /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot/efi
+mount /dev/nvme0n1p4 /mnt/home
